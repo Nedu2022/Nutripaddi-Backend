@@ -162,6 +162,31 @@ def build_advice(total):
         return "This meal is well balanced. Keep eating protein, vegetables, and fruit with your food."
     return " ".join(msgs)
 
+
+MAMABOT_USER_STATUSES = {
+    "pregnant": "pregnant mother",
+    "pregnancy": "pregnant mother",
+    "expecting": "pregnant mother",
+    "breastfeeding": "breastfeeding mother",
+    "breast_feeding": "breastfeeding mother",
+    "lactating": "breastfeeding mother",
+    "nursing": "breastfeeding mother",
+}
+
+
+def mamabot_context(*statuses):
+    for status in statuses:
+        if not status:
+            continue
+
+        key = status.strip().lower().replace("-", "_").replace(" ", "_")
+        label = MAMABOT_USER_STATUSES.get(key)
+        if label:
+            return key, label
+
+    return None, None
+
+
 # --- translation (Igbo / Yoruba / Hausa via Gemini, English fallback) ---
 LANG_NAMES = {"en":"English","ig":"Igbo","yo":"Yoruba","ha":"Hausa"}
 async def translate(text, lang):
@@ -197,14 +222,14 @@ async def recognize_with_gemini(img_bytes):
     txt = txt.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
     return _json.loads(txt)
 
-async def maternal_advice(total):
+async def maternal_advice(total, user_label):
     base = build_advice(total)          # reliable rule-based advice
     if not HF_TOKEN:
-        return base
+        return base, "rules"
 
     try:
         prompt = (f"Rewrite this maternal nutrition advice in warm, simple words for a "
-                  f"pregnant mother. Keep the same meaning:\n\n{base}")
+                  f"{user_label}. Keep the same meaning:\n\n{base}")
         async with httpx.AsyncClient(timeout=20) as c:
             r = await c.post(MAMA_URL, headers={"Authorization": f"Bearer {HF_TOKEN}"},
                 json={"inputs": prompt, "parameters": {"max_new_tokens": 200}})
@@ -212,16 +237,28 @@ async def maternal_advice(total):
         if isinstance(data, list) and data and "generated_text" in data[0]:
             text = data[0]["generated_text"].replace(prompt, "").strip()
             if text:
-                return text
+                return text, "mamabot"
     except Exception:
         pass
-    return base
+    return base, "rules"
+
+
+async def advice_for_user(total, *statuses):
+    _, user_label = mamabot_context(*statuses)
+    if user_label:
+        return await maternal_advice(total, user_label)
+
+    return build_advice(total), "rules"
 
 # --- endpoints ---
 @app.post("/scan-plate")
 async def scan_plate(
     file: UploadFile = File(...),
     lang: str = Form("en"),
+    user_status: str | None = Form(None),
+    onboarding_status: str | None = Form(None),
+    life_stage: str | None = Form(None),
+    maternal_status: str | None = Form(None),
     current_user: dict | None = Depends(get_current_user),
 ):
     img_bytes = await file.read()
@@ -235,14 +272,26 @@ async def scan_plate(
         foods.append({"key": n, "name": n.replace("_"," ").title(), "nutrition": nut})
         if nut:
             for k in total: total[k] += nut[k]
-    advice_en = build_advice(total)
+    advice_en, advice_source = await advice_for_user(
+        total, user_status, onboarding_status, life_stage, maternal_status
+    )
     advice = await translate(advice_en, lang)
-    return {"foods": foods, "total": total, "advice": advice, "advice_en": advice_en}
+    return {
+        "foods": foods,
+        "total": total,
+        "advice": advice,
+        "advice_en": advice_en,
+        "advice_source": advice_source,
+    }
 
 @app.post("/scan")   # your own model, single dish
 async def scan(
     file: UploadFile = File(...),
     lang: str = Form("en"),
+    user_status: str | None = Form(None),
+    onboarding_status: str | None = Form(None),
+    life_stage: str | None = Form(None),
+    maternal_status: str | None = Form(None),
     current_user: dict | None = Depends(get_current_user),
 ):
     img = Image.open(io.BytesIO(await file.read())).convert("RGB")
@@ -252,11 +301,13 @@ async def scan(
     key = classes[int(idx)]
     nut = await get_nutrition(key)
     total = nut if nut else {"calories":0,"protein_g":0,"iron_mg":0,"folate_mcg":0}
-    advice_en = build_advice(total)
+    advice_en, advice_source = await advice_for_user(
+        total, user_status, onboarding_status, life_stage, maternal_status
+    )
     advice = await translate(advice_en, lang)
     return {"foods": [{"key": key, "name": key.replace("_"," ").title(),
                        "confidence": round(conf.item()*100), "nutrition": nut}],
-            "advice": advice, "advice_en": advice_en}
+            "advice": advice, "advice_en": advice_en, "advice_source": advice_source}
 
 @app.get("/")
 def health():
