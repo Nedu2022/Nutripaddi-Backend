@@ -1,0 +1,646 @@
+{
+  "abacha_and_ugba(african_salad)": {
+    "display_name": "Abacha and Ugba (African Salad)",
+    "region": "Nigeria",
+    "aliases": [
+      "abacha",
+      "abacha and ugba",
+      "abacha ugba",
+      "abacha_and_ugba",
+      "african salad",
+      "african_salad",
+      "ugba"
+    ],
+    "usda_query": "tapioca salad"
+  },
+  "akara_and_eko": {
+    "display_name": "Akara and Eko",
+    "region": "Nigeria",
+    "aliases": [
+      "akara",
+      "akara and eko",
+      "bean cake and corn pap",
+      "bean fritter and corn pudding",
+      "bean fritters",
+      "eko"
+    ],
+    "usda_query": "black eyed pea fritter"
+  },
+  "amala_and_ewedu_gbegiri": {
+    "display_name": "Amala and Ewedu Gbegiri",
+    "region": "Nigeria",
+    "aliases": [
+      "amala",
+      "amala and ewedu",
+      "amala ewedu gbegiri",
+      "amala with ewedu",
+      "ewedu",
+      "gbegiri",
+      "yam flour with jute soup and bean soup"
+    ],
+    "usda_query": "yam flour porridge"
+  },
+  "asaro": {
+    "display_name": "Asaro",
+    "region": "Nigeria",
+    "aliases": [
+      "asaro elepo",
+      "yam porridge",
+      "yam pottage"
+    ],
+    "usda_query": "yam porridge"
+  },
+  "boli(bole)": {
+    "display_name": "Boli (Bole)",
+    "region": "Nigeria",
+    "aliases": [
+      "bole",
+      "boli",
+      "grilled plantain",
+      "roasted plantain"
+    ],
+    "usda_query": "roasted plantain"
+  },
+  "chin_chin": {
+    "display_name": "Chin Chin",
+    "region": "West Africa",
+    "aliases": [
+      "chin chin",
+      "chinchin",
+      "fried dough cubes"
+    ],
+    "usda_query": "fried dough snack"
+  },
+  "egusi_soup": {
+    "display_name": "Egusi Soup",
+    "region": "West Africa",
+    "aliases": [
+      "egusi",
+      "egusi stew",
+      "melon seed soup"
+    ],
+    "usda_query": "melon seed soup"
+  },
+  "ekwang": {
+    "display_name": "Ekwang",
+    "region": "Cameroon",
+    "aliases": [
+      "cocoyam leaves",
+      "cocoyam wrap",
+      "grated cocoyam"
+    ],
+    "usda_query": "cocoyam leaves"
+  },
+  "eru": {
+    "display_name": "Eru",
+    "region": "Cameroon",
+    "aliases": [
+      "cameroon eru",
+      "eru soup",
+      "eru stew",
+      "okok"
+    ],
+    "usda_query": "spinach stew"
+  },
+  "eth_beyaynetu": {
+    "display_name": "Beyaynetu",
+    "region": "Ethiopia",
+    "aliases": [
+      "bayenetu",
+      "beyaynetu",
+      "ethiopian mixed platter",
+      "vegetarian platter"
+    ],
+    "usda_query": "lentil vegetable stew"
+  },
+  "eth_chechebsa": {
+    "display_name": "Chechebsa",
+    "region": "Ethiopia",
+    "aliases": [
+      "chechebsa",
+      "ethiopian flatbread pieces",
+      "kita firfir"
+    ],
+    "usda_query": "flatbread cooked"
+  },
+  "eth_doro_wat": {
+    "display_name": "Doro Wat",
+    "region": "Ethiopia",
+    "aliases": [
+      "doro wat",
+      "doro wot",
+      "doro_wat",
+      "dorowat",
+      "ethiopian chicken stew",
+      "spicy chicken stew"
+    ],
+    "usda_query": "chicken stew"
+  },
+  "eth_firfir": {
+    "display_name": "Firfir",
+    "region": "Ethiopia",
+    "aliases": [
+      "ethiopian firfir",
+      "firfir",
+      "fitfit",
+      "injera firfir"
+    ],
+    "usda_query": "flatbread cooked"
+  },
+  "eth_genfo": {
+    "display_name": "Genfo",
+    "region": "Ethiopia",
+    "aliases": [
+      "barley porridge",
+      "ethiopian porridge",
+      "ga'at",
+      "gaat",
+      "genfo"
+    ],
+    "usda_query": "barley porridge"
+  },
+  "eth_kikil": {
+    "display_name": "Kikil",
+    "region": "Ethiopia",
+    "aliases": [
+      "beef stew",
+      "ethiopian beef stew",
+      "kikel",
+      "kikil"
+    ],
+    "usda_query": "beef stew"
+  },
+  "eth_kitfo": {
+    "display_name": "Kitfo",
+    "region": "Ethiopia",
+    "aliases": [
+      "ethiopian minced beef",
+      "ketfo",
+      "kitfo",
+      "minced beef"
+    ],
+    "usda_query": "beef minced"
+  },
+  "eth_shekla_tibs": {
+    "display_name": "Shekla Tibs",
+    "region": "Ethiopia",
+    "aliases": [
+      "beef tibs",
+      "ethiopian grilled beef",
+      "shekla tibs",
+      "shekla_tibs",
+      "tibs",
+      "tibs beef"
+    ],
+    "usda_query": "beef grilled"
+  },
+  "eth_shiro_wat": {
+    "display_name": "Shiro Wat",
+    "region": "Ethiopia",
+    "aliases": [
+      "chickpea stew",
+      "shiro",
+      "shiro wat",
+      "shiro wot",
+      "shiro_wat"
+    ],
+    "usda_query": "chickpea stew"
+  },
+  "eth_tire_siga": {
+    "display_name": "Tire Siga",
+    "region": "Ethiopia",
+    "aliases": [
+      "ethiopian raw beef",
+      "raw beef",
+      "tere siga",
+      "tire siga",
+      "tire_siga"
+    ],
+    "usda_query": "beef raw"
+  },
+  "ewa_agoyin": {
+    "display_name": "Ewa Agoyin",
+    "region": "Nigeria",
+    "aliases": [
+      "black eyed peas stew",
+      "ewa agoyin",
+      "ewa agonyin",
+      "mashed beans"
+    ],
+    "usda_query": "black eyed peas cooked"
+  },
+  "fried_plantains_(dodo)": {
+    "display_name": "Fried Plantains (Dodo)",
+    "region": "West Africa",
+    "aliases": [
+      "dodo",
+      "fried plantain",
+      "fried plantains",
+      "fried_plantain",
+      "fried_plantains",
+      "plantain dodo"
+    ],
+    "usda_query": "fried plantains"
+  },
+  "jollof_ghana": {
+    "display_name": "Ghanaian Jollof Rice",
+    "region": "Ghana",
+    "aliases": [
+      "ghana jollof",
+      "ghanaian jollof",
+      "jollof ghana",
+      "jollof rice ghana"
+    ],
+    "usda_query": "rice tomato stew"
+  },
+  "jollof_rice": {
+    "display_name": "Nigerian Jollof Rice",
+    "region": "Nigeria",
+    "aliases": [
+      "jollof",
+      "jollof rice",
+      "naija jollof",
+      "nigerian jollof",
+      "party jollof"
+    ],
+    "usda_query": "jollof rice"
+  },
+  "ken_bhaji": {
+    "display_name": "Bhaji",
+    "region": "Kenya",
+    "aliases": [
+      "bhaji",
+      "bhajia",
+      "kenyan bhaji",
+      "potato bhaji",
+      "potato bhajia"
+    ],
+    "usda_query": "fried potato"
+  },
+  "ken_chapati": {
+    "display_name": "Chapati",
+    "region": "Kenya",
+    "aliases": [
+      "chapati",
+      "east african chapati",
+      "kenyan chapati"
+    ],
+    "usda_query": "chapati"
+  },
+  "ken_githeri": {
+    "display_name": "Githeri",
+    "region": "Kenya",
+    "aliases": [
+      "corn and beans",
+      "githeri",
+      "kenyan githeri",
+      "maize and beans"
+    ],
+    "usda_query": "corn beans cooked"
+  },
+  "ken_kachumbari": {
+    "display_name": "Kachumbari",
+    "region": "Kenya",
+    "aliases": [
+      "kachumbari",
+      "kachumbari salad",
+      "kenyan salad",
+      "tomato onion salad"
+    ],
+    "usda_query": "tomato onion salad"
+  },
+  "ken_kukuchoma": {
+    "display_name": "Kuku Choma",
+    "region": "Kenya",
+    "aliases": [
+      "grilled chicken",
+      "kenyan grilled chicken",
+      "kuku choma",
+      "kuku_choma",
+      "kukuchoma",
+      "roast chicken"
+    ],
+    "usda_query": "chicken grilled"
+  },
+  "ken_mandazi": {
+    "display_name": "Mandazi",
+    "region": "Kenya",
+    "aliases": [
+      "east african doughnut",
+      "mahamri",
+      "mandazi",
+      "mandazi doughnut"
+    ],
+    "usda_query": "fried dough"
+  },
+  "ken_masalachips": {
+    "display_name": "Masala Chips",
+    "region": "Kenya",
+    "aliases": [
+      "chips masala",
+      "kenyan masala chips",
+      "masala chips",
+      "spiced fries"
+    ],
+    "usda_query": "french fries spiced"
+  },
+  "ken_matoke": {
+    "display_name": "Matoke",
+    "region": "Kenya",
+    "aliases": [
+      "cooked green bananas",
+      "green banana stew",
+      "matoke",
+      "matooke"
+    ],
+    "usda_query": "green banana cooked"
+  },
+  "ken_mukimo": {
+    "display_name": "Mukimo",
+    "region": "Kenya",
+    "aliases": [
+      "irish mukimo",
+      "kenyan mukimo",
+      "mashed potato maize peas",
+      "mukimo"
+    ],
+    "usda_query": "mashed potato corn peas"
+  },
+  "ken_nyamachoma": {
+    "display_name": "Nyama Choma",
+    "region": "Kenya",
+    "aliases": [
+      "grilled meat",
+      "kenyan grilled meat",
+      "nyama choma",
+      "nyama_choma",
+      "nyamachoma",
+      "roasted meat"
+    ],
+    "usda_query": "grilled beef"
+  },
+  "ken_pilau": {
+    "display_name": "Pilau",
+    "region": "Kenya",
+    "aliases": [
+      "kenyan pilau",
+      "pilau",
+      "pilau rice",
+      "spiced rice"
+    ],
+    "usda_query": "rice pilaf"
+  },
+  "ken_sukumawiki": {
+    "display_name": "Sukuma Wiki",
+    "region": "Kenya",
+    "aliases": [
+      "collard greens",
+      "kenyan greens",
+      "sukuma wiki",
+      "sukumawiki"
+    ],
+    "usda_query": "collard greens cooked"
+  },
+  "ken_ugali": {
+    "display_name": "Ugali",
+    "region": "Kenya",
+    "aliases": [
+      "cornmeal porridge",
+      "maize meal",
+      "posho",
+      "sima",
+      "ugali"
+    ],
+    "usda_query": "cornmeal porridge"
+  },
+  "meat_pie": {
+    "display_name": "Meat Pie",
+    "region": "West Africa",
+    "aliases": [
+      "beef pie",
+      "meat pie",
+      "nigerian meat pie"
+    ],
+    "usda_query": "meat pie"
+  },
+  "moin_moin": {
+    "display_name": "Moin Moin",
+    "region": "Nigeria",
+    "aliases": [
+      "bean pudding",
+      "moi moi",
+      "moin moin",
+      "moimoi",
+      "steamed bean pudding"
+    ],
+    "usda_query": "bean pudding steamed"
+  },
+  "ndole": {
+    "display_name": "Ndole",
+    "region": "Cameroon",
+    "aliases": [
+      "bitter leaf stew",
+      "bitterleaf stew",
+      "cameroon ndole",
+      "ndole"
+    ],
+    "usda_query": "bitterleaf stew"
+  },
+  "nkwobi": {
+    "display_name": "Nkwobi",
+    "region": "Nigeria",
+    "aliases": [
+      "cow foot",
+      "cow leg",
+      "nkwobi",
+      "spiced cow foot"
+    ],
+    "usda_query": "spiced cow foot"
+  },
+  "ofeowerri": {
+    "display_name": "Ofe Owerri",
+    "region": "Nigeria",
+    "aliases": [
+      "igbo vegetable soup",
+      "ofe owerri",
+      "ofe_owerri",
+      "owerri soup"
+    ],
+    "usda_query": "vegetable soup nigerian"
+  },
+  "ogbono": {
+    "display_name": "Ogbono Soup",
+    "region": "West Africa",
+    "aliases": [
+      "bush mango soup",
+      "draw soup",
+      "ogbono",
+      "ogbono soup"
+    ],
+    "usda_query": "bush mango soup"
+  },
+  "okro_soup": {
+    "display_name": "Okro Soup",
+    "region": "West Africa",
+    "aliases": [
+      "draw soup okra",
+      "okra",
+      "okra soup",
+      "okro",
+      "okro soup"
+    ],
+    "usda_query": "okra soup"
+  },
+  "palm_nut_soup": {
+    "display_name": "Palm Nut Soup",
+    "region": "West Africa",
+    "aliases": [
+      "banga soup",
+      "palm nut soup",
+      "palm oil soup",
+      "palmnut soup"
+    ],
+    "usda_query": "palm oil soup"
+  },
+  "pepper_soup": {
+    "display_name": "Pepper Soup",
+    "region": "West Africa",
+    "aliases": [
+      "fish pepper soup",
+      "meat pepper soup",
+      "pepper soup",
+      "peppersoup",
+      "spicy broth"
+    ],
+    "usda_query": "spiced meat broth"
+  },
+  "puff_puff": {
+    "display_name": "Puff Puff",
+    "region": "West Africa",
+    "aliases": [
+      "african doughnut",
+      "fried dough ball",
+      "puff puff",
+      "puff-puff"
+    ],
+    "usda_query": "fried dough ball"
+  },
+  "suya": {
+    "display_name": "Suya",
+    "region": "West Africa",
+    "aliases": [
+      "beef suya",
+      "grilled beef skewer",
+      "spicy beef skewer",
+      "suya"
+    ],
+    "usda_query": "grilled beef skewer spiced"
+  },
+  "vegetable_soup": {
+    "display_name": "Vegetable Soup",
+    "region": "Nigeria",
+    "aliases": [
+      "edikaikong",
+      "edikang ikong",
+      "edikang_ikong_soup",
+      "nigerian vegetable soup",
+      "ugu soup",
+      "vegetable soup"
+    ],
+    "usda_query": "vegetable soup nigerian"
+  },
+  "waakye": {
+    "display_name": "Waakye",
+    "region": "Ghana",
+    "aliases": [
+      "ghana rice and beans",
+      "rice and beans",
+      "waakye",
+      "wakye"
+    ],
+    "usda_query": "rice beans"
+  },
+  "beans": {
+    "display_name": "Beans",
+    "region": "Generic",
+    "aliases": [
+      "beans",
+      "cooked beans"
+    ],
+    "usda_query": "beans cooked"
+  },
+  "beef": {
+    "display_name": "Beef",
+    "region": "Generic",
+    "aliases": [
+      "beef",
+      "cooked beef"
+    ],
+    "usda_query": "beef cooked"
+  },
+  "chicken": {
+    "display_name": "Chicken",
+    "region": "Generic",
+    "aliases": [
+      "chicken",
+      "cooked chicken"
+    ],
+    "usda_query": "chicken cooked"
+  },
+  "coleslaw": {
+    "display_name": "Coleslaw",
+    "region": "Generic",
+    "aliases": [
+      "coleslaw",
+      "slaw"
+    ],
+    "usda_query": "coleslaw"
+  },
+  "egg": {
+    "display_name": "Egg",
+    "region": "Generic",
+    "aliases": [
+      "boiled egg",
+      "egg"
+    ],
+    "usda_query": "egg boiled"
+  },
+  "fish": {
+    "display_name": "Fish",
+    "region": "Generic",
+    "aliases": [
+      "cooked fish",
+      "fish"
+    ],
+    "usda_query": "fish cooked"
+  },
+  "fried_chicken": {
+    "display_name": "Fried Chicken",
+    "region": "Generic",
+    "aliases": [
+      "fried chicken"
+    ],
+    "usda_query": "chicken fried"
+  },
+  "rice": {
+    "display_name": "Rice",
+    "region": "Generic",
+    "aliases": [
+      "cooked rice",
+      "plain rice",
+      "rice",
+      "white rice"
+    ],
+    "usda_query": "rice cooked white"
+  },
+  "salad": {
+    "display_name": "Salad",
+    "region": "Generic",
+    "aliases": [
+      "green salad",
+      "salad",
+      "vegetable salad"
+    ],
+    "usda_query": "salad vegetable"
+  }
+}

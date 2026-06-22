@@ -26,7 +26,7 @@ keep working.
 - Recognizes multi-food plates with Gemini vision prompting.
 - Maps detected foods to USDA FoodData Central nutrition records.
 - Calculates meal-level calories, protein, iron, and folate.
-- Generates clear nutrition guidance from deterministic rules.
+- Generates clear nutrition guidance from rule-grounded thresholds with varied coach wording.
 - Routes pregnant or breastfeeding users through MamaBot for warmer maternal advice.
 - Translates advice to English, Igbo, Yoruba, or Hausa with English fallback.
 - Optionally verifies frontend users with Supabase Auth before processing scans.
@@ -96,7 +96,7 @@ sequenceDiagram
 | Auth layer | Optionally protects scan endpoints with frontend user sessions. | Supabase Auth user verification when `AUTH_REQUIRED=true` |
 | Vision layer | Classifies single foods locally and identifies multiple foods on a plate. | `best.pt`, `class_names.json`, `timm`, PyTorch, Gemini |
 | Nutrition layer | Converts detected food names into nutrient values. | USDA FoodData Central search API |
-| Advice layer | Produces reliable baseline nutrition advice. | Deterministic rules for iron, protein, and folate |
+| Advice layer | Produces reliable nutrition advice without sounding repetitive. | Rule-grounded iron, protein, and folate thresholds with varied wording |
 | Maternal AI layer | Personalizes advice for pregnant and breastfeeding users. | MamaBot through Hugging Face Inference API |
 | Translation layer | Localizes advice for supported Nigerian languages. | Gemini 2.5 Flash with English fallback |
 | Deployment layer | Runs as a containerized Hugging Face Space. | Docker, Uvicorn, CPU PyTorch runtime |
@@ -138,12 +138,18 @@ Health and runtime configuration check.
 
 ### `POST /scan`
 
-Classifies a single food image with the local model.
+Classifies a single food image. The local model handles known trained African
+foods, and Gemini acts as a global-food safety net when `GEMINI_KEY` is
+available. The endpoint can return African, Western, Asian, Middle Eastern,
+mixed, generic, or unknown foods without forcing foreign meals into African
+labels.
 
 Form fields:
 
 - `file`: required image upload.
 - `lang`: optional response language. Supported values are `en`, `ig`, `yo`, and `ha`.
+- `country`: optional selected country for simple local wording, such as `Nigeria`, `Ghana`, `Kenya`, `Ethiopia`, or `Cameroon`.
+- `location`: optional selected city or location, such as `Lagos`, `Accra`, `Nairobi`, `Addis Ababa`, or `Douala`.
 - `user_status`, `onboarding_status`, `life_stage`, `maternal_status`: optional onboarding context.
 
 Example response:
@@ -153,8 +159,13 @@ Example response:
   "foods": [
     {
       "key": "jollof_rice",
-      "name": "Jollof Rice",
+      "name": "Nigerian Jollof Rice",
+      "food_origin": "african",
+      "region": "Nigeria",
+      "country": "Nigeria",
+      "mapped": true,
       "confidence": 92,
+      "source": "model",
       "nutrition": {
         "match": "rice tomato stew",
         "calories": 142,
@@ -164,16 +175,27 @@ Example response:
       }
     }
   ],
-  "advice": "This meal is low in iron...",
-  "advice_en": "This meal is low in iron...",
-  "advice_source": "rules"
+  "summary": "This meal gives energy, but it is low in blood-building iron...",
+  "summary_en": "This meal gives about 142 calories for energy...",
+  "advice": "This meal does not have much iron. Add beans, ugu, egg, fish, or meat when you can.",
+  "advice_en": "This meal does not have much iron...",
+  "advice_source": "rules",
+  "response_style": {
+    "country_or_region": "Nigeria",
+    "language": "English",
+    "plain_terms": true,
+    "local_style": "nigeria",
+    "source": "gemini",
+    "varied": true
+  }
 }
 ```
 
 ### `POST /scan-plate`
 
-Recognizes multiple foods on a plate, then aggregates nutrition across the full
-meal.
+Recognizes multiple foods on a plate with Gemini, then aggregates nutrition
+across the full meal. Gemini can return catalog African foods and open-ended
+global foods.
 
 Example response:
 
@@ -182,7 +204,12 @@ Example response:
   "foods": [
     {
       "key": "jollof_rice",
-      "name": "Jollof Rice",
+      "name": "Nigerian Jollof Rice",
+      "food_origin": "african",
+      "region": "Nigeria",
+      "country": "Nigeria",
+      "mapped": true,
+      "source": "gemini",
       "nutrition": {
         "match": "rice tomato stew",
         "calories": 142,
@@ -192,8 +219,13 @@ Example response:
       }
     },
     {
-      "key": "fried_plantain",
-      "name": "Fried Plantain",
+      "key": "fried_plantains_(dodo)",
+      "name": "Fried Plantains (Dodo)",
+      "food_origin": "african",
+      "region": "West Africa",
+      "country": "West Africa",
+      "mapped": true,
+      "source": "gemini",
       "nutrition": {
         "match": "fried plantains",
         "calories": 260,
@@ -209,11 +241,109 @@ Example response:
     "iron_mg": 1.8,
     "folate_mcg": 34
   },
-  "advice": "This meal is low in protein...",
-  "advice_en": "This meal is low in protein...",
-  "advice_source": "mamabot"
+  "summary": "This meal gives energy, but it needs more body-building food...",
+  "summary_en": "This meal gives about 402 calories for energy...",
+  "advice": "This meal does not have much protein...",
+  "advice_en": "This meal does not have much protein...",
+  "advice_source": "mamabot",
+  "response_style": {
+    "country_or_region": "Nigeria",
+    "language": "English",
+    "plain_terms": true,
+    "local_style": "nigeria",
+    "source": "gemini",
+    "varied": true
+  }
 }
 ```
+
+If the scanned food is outside the catalog, the API still returns it instead of
+forcing it into an African food label:
+
+```json
+{
+  "foods": [
+    {
+      "key": "pizza",
+      "name": "Pizza",
+      "food_origin": "western",
+      "mapped": false,
+      "source": "gemini_open",
+      "nutrition": {
+        "match": "PIZZA",
+        "calories": 266,
+        "protein_g": 11,
+        "iron_mg": 2.5,
+        "folate_mcg": 90
+      },
+      "model_guess": {
+        "key": "jollof_rice",
+        "name": "Nigerian Jollof Rice",
+        "confidence": 54
+      }
+    }
+  ]
+}
+```
+
+For western or other out-of-catalog foods, configure `GEMINI_KEY`. Without
+Gemini, `/scan` can only use the local model's trained labels; low-confidence
+model-only results are returned with `needs_review: true`.
+
+Detection follows this rule:
+
+- Detect any food from anywhere.
+- If it is African, use the correct African country or local name where possible.
+- If it is Western, Asian, Middle Eastern, mixed, or foreign, say exactly what it is.
+- Do not force foreign or unclear foods into African names.
+- Mark unclear foods with `food_origin: "unknown"` and `needs_review: true`.
+
+Example local advice for a Nigerian user scanning pizza:
+
+```text
+This looks like Pizza. It can be filling, but try adding a side of vegetables or fruit later today.
+```
+
+### `GET /foods`
+
+Returns backend-provided food options for correction/search UI. The frontend
+should use this instead of hardcoding all detected food types.
+
+```text
+GET /foods?q=pizza
+```
+
+```json
+{
+  "foods": [
+    {
+      "key": "pizza",
+      "name": "Pizza",
+      "region": null,
+      "country": null,
+      "food_origin": "western",
+      "aliases": [],
+      "mapped": false,
+      "source": "open_food"
+    }
+  ],
+  "open_foods_supported": true,
+  "correction_source": "backend"
+}
+```
+
+## Plain Local Responses
+
+The frontend can send `country` or `location` with each scan request so the
+backend rewrites `summary` and `advice` in simple words for that selected place.
+Supported local styles include Nigeria, Ghana, Kenya, Ethiopia, Cameroon, and
+West Africa. City names such as Lagos, Accra, Nairobi, Addis Ababa, Douala, and
+Yaounde are mapped to their countries.
+
+When `GEMINI_KEY` is available, the backend rewrites the message in the selected
+language and local speaking style with sampling enabled so the coach does not
+sound like a repeated script. When Gemini is unavailable, the API keeps a plain
+rule-based response but rotates safe wording and local food tips.
 
 ## Maternal Advice Routing
 
@@ -245,9 +375,33 @@ rule-based advice and labels the response with `advice_source: "rules"`.
 | --- | --- |
 | `best.pt` | Trained PyTorch checkpoint for food classification. |
 | `class_names.json` | Label list used to map classifier output indices to food keys. |
-| `USDA_SEARCH` | Hand-tuned mapping from African food labels to searchable USDA terms. |
+| `data/food_catalog.json` | Canonical African food catalog with display names, regional variants, aliases, and nutrition lookup terms. |
 | `MAMA_URL` | Hugging Face Inference API endpoint for MamaBot maternal advice rewriting. |
 | `GEMINI_URL` | Gemini endpoint used for plate recognition and translation. |
+
+## Food Variant Matching
+
+Food names from the local classifier, Gemini, and the frontend are normalized
+through `data/food_catalog.json` before nutrition lookup. The catalog is the
+source of truth for regional variants such as `eth_doro_wat`, `ken_ugali`,
+`jollof_ghana`, and `jollof_rice`.
+
+The catalog is not the full list of foods the system can detect. It is a mapping
+layer for known foods. Gemini can return open-ended foods, including western
+foods, and the backend will search USDA with the natural detected name when a
+food is not mapped.
+
+To add or correct an African food variant:
+
+1. Add the canonical key to `data/food_catalog.json`.
+2. Include common spellings, local names, and unprefixed aliases in `aliases`.
+3. Set `display_name`, `region`, and `usda_query`.
+4. Only edit `class_names.json` when the model checkpoint has been retrained with
+   the same label order.
+
+The API validates on startup that every classifier label exists in the catalog.
+Unknown Gemini foods are returned with `mapped: false` and are still eligible for
+USDA nutrition lookup using their detected name.
 
 ## Configuration
 
@@ -259,6 +413,7 @@ Add these environment variables locally or in Hugging Face Space settings under
 | `USDA_API_KEY` | Recommended | Enables nutrition lookup from USDA FoodData Central. |
 | `HF_TOKEN` | Optional | Enables MamaBot advice rewriting for maternal users. |
 | `GEMINI_KEY` | Optional | Enables `/scan-plate` recognition and non-English translation. |
+| `MIN_CLASSIFIER_CONFIDENCE` | Optional | Confidence threshold before `/scan` trusts Gemini over the local model. Defaults to `0.65`. |
 | `SUPABASE_URL` | Optional | Supabase project URL for auth verification. |
 | `SUPABASE_ANON_KEY` | Optional | Supabase public key used to verify bearer tokens. |
 | `AUTH_REQUIRED` | Optional | Set to `true` to require authenticated scan requests. |
@@ -293,7 +448,7 @@ docker run --env-file .env -p 7860:7860 foodscan-backend
 
 - Uses a local model for low-latency single-dish inference instead of sending every image to an external API.
 - Separates food recognition, nutrition lookup, advice generation, and translation into clear stages.
-- Combines deterministic nutrition rules with LLM rewriting so safety-critical advice has a stable baseline.
+- Keeps nutrition safety grounded in stable thresholds while varying coach wording through safe templates and LLM sampling.
 - Exposes `advice_source` so the frontend can verify whether the response came from MamaBot or rules.
 - Keeps external services optional with fallbacks for missing keys, timeouts, or failed model calls.
 - Supports deployment as a lightweight CPU container for practical production hosting.
