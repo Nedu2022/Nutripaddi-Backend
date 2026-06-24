@@ -235,6 +235,14 @@ def low_detection_confidence(value):
         return False
 
 
+def _parse_portion_g(value):
+    try:
+        g = int(float(value))
+        return g if g > 0 else None
+    except (TypeError, ValueError):
+        return None
+
+
 def normalize_food_detection(value):
     if isinstance(value, dict):
         raw_name = (
@@ -252,11 +260,15 @@ def normalize_food_detection(value):
         )
         country = value.get("country") or value.get("local_country")
         confidence = value.get("confidence")
+        portion_g = value.get("portion_g")
+        meal_role = value.get("meal_role")
     else:
         raw_name = value
         origin = "unknown"
         country = None
         confidence = None
+        portion_g = None
+        meal_role = None
 
     key = normalize_food_key(raw_name)
     if country:
@@ -289,6 +301,8 @@ def normalize_food_detection(value):
         "food_origin": origin,
         "country": country,
         "confidence": confidence,
+        "portion_g": _parse_portion_g(portion_g),
+        "meal_role": meal_role if meal_role in {"main", "protein", "side", "drink", "condiment"} else None,
     }
 
 
@@ -341,6 +355,10 @@ def food_response(
         item["source"] = source
     if model_guess:
         item["model_guess"] = model_guess
+    if detection.get("portion_g"):
+        item["portion_g"] = detection["portion_g"]
+    if detection.get("meal_role"):
+        item["meal_role"] = detection["meal_role"]
     detection_low_confidence = low_detection_confidence(detection.get("confidence"))
     if needs_review or origin == "unknown" or detection_low_confidence:
         item["needs_review"] = True
@@ -374,22 +392,28 @@ def normalize_food_list(values):
 def vision_catalog_prompt():
     allowed_keys = ", ".join(f'"{key}"' for key in sorted(FOOD_CATALOG))
     return (
-        "Detect any visible food from anywhere in the world. If the food is African, "
-        "use the most correct country/local food name or one of these known African "
-        f"catalog keys when it matches: [{allowed_keys}]. If the food is Western, "
-        "Asian, Middle Eastern, mixed, or foreign, say exactly what it is and do not "
-        "force it into an African name. For unclear foods, use unknown_food and "
-        "food_origin unknown. Reply ONLY with a JSON array of objects using this shape: "
-        '[{"name":"jollof_rice","food_origin":"african","country":"Nigeria","confidence":"high"},'
-        '{"name":"pizza","food_origin":"western","country":null,"confidence":"high"},'
-        '{"name":"shawarma","food_origin":"middle_eastern","country":null,"confidence":"medium"}]. '
-        "Allowed food_origin values are african, western, asian, middle_eastern, mixed, generic, unknown. "
+        "You are a food recognition expert. Identify EVERY distinct component visible on this plate "
+        "— the main dish, all sides, proteins, sauces, and drinks, even if they share the same bowl. "
+        "If the food is African, use the most correct country/local food name or one of these known "
+        f"African catalog keys when it matches: [{allowed_keys}]. If the food is Western, Asian, "
+        "Middle Eastern, mixed, or foreign, name it exactly as it is. For unclear items use "
+        "unknown_food and food_origin unknown. "
+        "For each food also estimate the portion_g (integer grams visible on the plate) and assign "
+        "a meal_role: 'main' for the primary starch or base dish, 'protein' for meat/fish/eggs/beans, "
+        "'side' for vegetables and accompaniments, 'drink' for beverages, 'condiment' for sauces/oils. "
+        "Reply ONLY with a JSON array of objects: "
+        '[{"name":"jollof_rice","food_origin":"african","country":"Nigeria","confidence":"high","portion_g":280,"meal_role":"main"},'
+        '{"name":"fried_chicken","food_origin":"western","country":null,"confidence":"high","portion_g":150,"meal_role":"protein"},'
+        '{"name":"coleslaw","food_origin":"western","country":null,"confidence":"medium","portion_g":80,"meal_role":"side"}]. '
+        "Allowed food_origin: african, western, asian, middle_eastern, mixed, generic, unknown. "
+        "Allowed meal_role: main, protein, side, drink, condiment. "
+        "portion_g must be an integer greater than 0. confidence must be high, medium, or low. "
         "No markdown and no extra text."
     )
 
 
 # --- USDA nutrition ---
-async def get_nutrition(dish):
+async def get_nutrition(dish, portion_g=None):
     if not USDA_API_KEY:
         return None
 
@@ -412,6 +436,12 @@ async def get_nutrition(dish):
     for n in food.get("foodNutrients", []):
         if n.get("nutrientId") in want:
             out[want[n["nutrientId"]]] = n.get("value", 0)
+    # USDA values are per 100g — scale to the actual estimated portion
+    if portion_g and portion_g > 0:
+        scale = portion_g / 100
+        for k in ("calories", "protein_g", "iron_mg", "folate_mcg"):
+            out[k] = round(out[k] * scale, 1)
+        out["portion_g"] = portion_g
     return out
 
 # --- simple local language helpers ---
@@ -866,7 +896,7 @@ async def scan_plate(
             "error": "I could not read the plate clearly. Please try again with a clearer food photo.",
             "error_code": "plate_recognition_failed",
         }
-    nutritions = await asyncio.gather(*[get_nutrition(n) for n in detections])
+    nutritions = await asyncio.gather(*[get_nutrition(n, n.get("portion_g")) for n in detections])
     foods, total = [], {"calories":0,"protein_g":0,"iron_mg":0,"folate_mcg":0}
     for detection, nut in zip(detections, nutritions):
         source = "gemini" if detection["key"] in FOOD_CATALOG else "gemini_open"
